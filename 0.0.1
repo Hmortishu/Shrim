@@ -1,23 +1,36 @@
 import pygame
 import time
 import random
+import math
 
 
 pygame.init()  # inicializa o pygame
-display_witdh = 800
-display_height = 600
-black = (0, 0, 0)
-white = (255, 255, 255)
-imgSrc = pygame.image.load('original.png')
+display_witdh = 800 #  largura da janela
+display_height = 600    # Altura da janela
+black = (0, 0, 0)   #   cor preta
+white = (255, 255, 255)     # cor branca
+green = (0,255,0)   #cor verde
+red = (255,0,0)     #cor vermelha
 gameDisplay = pygame.display.set_mode((display_witdh, display_height))  # a janela ganha Xtamanho
 pygame.display.set_caption('Shrim')  # titulo da janela
 clock = pygame.time.Clock()  # criar um objecto que servira para fazer refresh
 
 
+
+ #  funçao criar camarao, cria um camarao numa posição ramdom
 def createShrimp():
-    x = random.randrange(0, 600)
-    y = random.randrange(0, 400)
-    pygame.draw.circle(gameDisplay, black, (x, y), 10)
+    x = random.randrange(100, 700)
+    y = random.randrange(100, 500)
+    pygame.draw.circle(gameDisplay, red, (x, y), 10)
+    return [x, y]
+
+    # criar comida
+def createFood():
+    x = random.randrange(100, 700)
+    y = random.randrange(100, 500)
+    r = random.randrange(3,8)
+    pygame.draw.circle(gameDisplay, green, (x, y), r)
+    return [[x, y], r]
 
 def text_objects(text, font):
     textSurface = font.render(text, True, black)
@@ -35,28 +48,69 @@ def gameloop():
     sec = 0
     acabar = False
     shrimpPos = []
+    foodData = []
     while not acabar:
+        gameDisplay.fill(white)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:  # no caso de se clicar no X
                 pygame.quit()
                 quit()
 
-        if sec == 0:
-            gameDisplay.fill(white)
-
+        #criar camaroes
         if sec%600 == 0 and len(shrimpPos) != 19:
             shrimpPos.append(createShrimp())
 
+        #criar comida
+        if sec%150 == 0:
+            foodData.append(createFood())
+
+        # aumento da comida
+        if sec % 300 == 0:
+            for z in range(0, len(foodData)):
+                if foodData[z][1] < 15:
+                    foodData[z][1] += 1
+
+        #manter a comida na janela
+        for z in range(0, len(foodData)):
+            posX = foodData[z][0][0]
+            posY = foodData[z][0][1]
+            r = foodData[z][1]
+            pygame.draw.circle(gameDisplay, green, (posX,posY), r)
+
+        #manter os camaroes na janeça
         for x in range(0, len(shrimpPos)):
-            print(x)
+            pygame.draw.circle(gameDisplay, red, shrimpPos[x], 10)
+
+        for x in range(0, len(shrimpPos)):
+            posSx = shrimpPos[x][0]
+            posSy = shrimpPos[x][1]
+            for z in range(0, len(foodData)):
+                posFx = foodData[z][0][0]
+                posFy = foodData[z][0][1]
+                print(posSx, posSy, posFx, posFy)
+                dist = math.hypot(posFx - posSx, posFy - posSy)
+                print(dist)
+                if dist < (10 + foodData[z][1]):
+                    del foodData[z]
+                    break
+                else:
+                    distX = posFx - posSx
+                    distY = posFy - posSy
+                    print(distX, distY)
 
 
-
-
-
+               # d = sqrt(((-)*(-))+((-)*(-)))
+        #  i, l = shrimpPos[0]
+        #  i+=1
+        #  l+=1
+        # shrimpPos[0] = (i,l)
+        #  pygame.draw.circle(gameDisplay, black, shrimpPos[0], 10)
+        #  for x in range(0, len(shrimpPos)):
+        #    print(x)
+         #   print(shrimpPos[x])
 
         pygame.display.update() #   fazer update a imagem da janeça
-        clock.tick(60)
+        clock.tick(1)
         sec += 1
 
 gameloop()
