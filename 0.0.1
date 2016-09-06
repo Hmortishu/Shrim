@@ -42,20 +42,9 @@ def counter(pontos):
     gameDisplay.blit(TextSurf, TextRect)
     pygame.display.update()
 
-
+'''
 def mover(shrimpPos, foodData):
-    for x in range(0, len(shrimpPos)):
-        posSx = shrimpPos[x][0]
-        posSy = shrimpPos[x][1]
-        for z in range(0, len(foodData)):
-            posFx = foodData[z][0][0]
-            posFy = foodData[z][0][1]
-            print(posSx, posSy, posFx, posFy)
-            dist = math.hypot(posFx - posSx, posFy - posSy)
-            print(dist)
-            if dist < (10 + foodData[z][1]):
-                del foodData[z]
-                break
+
             else:
                 moveX = 0
                 moveY = 0
@@ -65,7 +54,7 @@ def mover(shrimpPos, foodData):
                 if distX < 0 and distY < 0:
                     moveX = -1;
                     moveY = -1;
-                #elif distX == 0 and distY
+                #elif distX == 0 and distY'''
 
 def tracking(princ, dataFood):
     posX = princ[0]
@@ -79,7 +68,6 @@ def tracking(princ, dataFood):
         comida.append(dist)
 
     lowest = comida.index(min(comida))
-    print(lowest)
 
     speedX = 0
     speedY = 0
@@ -109,7 +97,6 @@ def gameloop():
     acabar = False
     shrimpPos = []
     foodData = []
-
     while not acabar:
         gameDisplay.fill(white)
         for event in pygame.event.get():
@@ -118,11 +105,14 @@ def gameloop():
                 quit()
 
         #criar camaroes
-        if sec%600 == 0 and len(shrimpPos) != 1:
+        if sec%600 == 0 and len(shrimpPos) != 20:
             shrimpPos.append(createShrimp())
 
         #criar comida
-        if sec%150 == 0 and len(foodData) !=2:
+        if sec%120 == 0:
+            foodData.append(createFood())
+            foodData.append(createFood())
+            foodData.append(createFood())
             foodData.append(createFood())
 
         # aumento da comida
@@ -154,10 +144,33 @@ def gameloop():
         for z in range(0, len(shrimpPos)):
             moveX, moveY = tracking(shrimpPos[z], foodData)
             sX, sY = shrimpPos[z]
-            print(moveX, moveY, sX, sY)
             shrimpPos[z][0]+=moveX
             shrimpPos[z][1]+=moveY
-            print(moveX, moveY, sX, sY)
+
+        for x in range(0, len(shrimpPos)):
+            posSx = shrimpPos[x][0]
+            posSy = shrimpPos[x][1]
+            for z in range(0, len(foodData)):
+                posFx = foodData[z][0][0]
+                posFy = foodData[z][0][1]
+                dist = math.hypot(posFx - posSx, posFy - posSy)
+                if dist < (10 + foodData[z][1]):
+                    del foodData[z]
+                    break
+
+        for x in range(0, len(shrimpPos)):
+            posSx = shrimpPos[x][0]
+            posSy = shrimpPos[x][1]
+            for z in range(0, len(shrimpPos)):
+                if x == z:
+                    break
+                posFx = shrimpPos[z][0]
+                posFy = shrimpPos[z][1]
+                dist = math.hypot(posFx - posSx, posFy - posSy)
+                if dist < 20:
+                    del shrimpPos[z]
+                    shrimpPos = list(filter(None.__ne__, shrimpPos))
+                    break
 
         pygame.display.update() #   fazer update a imagem da janeça
         clock.tick(60)
