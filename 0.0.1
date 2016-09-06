@@ -1,0 +1,63 @@
+import pygame
+import time
+import random
+
+
+pygame.init()  # inicializa o pygame
+display_witdh = 800
+display_height = 600
+black = (0, 0, 0)
+white = (255, 255, 255)
+imgSrc = pygame.image.load('original.png')
+gameDisplay = pygame.display.set_mode((display_witdh, display_height))  # a janela ganha Xtamanho
+pygame.display.set_caption('Shrim')  # titulo da janela
+clock = pygame.time.Clock()  # criar um objecto que servira para fazer refresh
+
+
+def createShrimp():
+    x = random.randrange(0, 600)
+    y = random.randrange(0, 400)
+    pygame.draw.circle(gameDisplay, black, (x, y), 10)
+
+def text_objects(text, font):
+    textSurface = font.render(text, True, black)
+    return textSurface, textSurface.get_rect()
+
+
+def counter(pontos):
+    largeText = pygame.font.Font('freesansbold.ttf', 15)
+    TextSurf, TextRect = text_objects(pontos, largeText)
+    TextRect.center = (30, 15)
+    gameDisplay.blit(TextSurf, TextRect)
+    pygame.display.update()
+
+def gameloop():
+    sec = 0
+    acabar = False
+    shrimpPos = []
+    while not acabar:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:  # no caso de se clicar no X
+                pygame.quit()
+                quit()
+
+        if sec == 0:
+            gameDisplay.fill(white)
+
+        if sec%600 == 0 and len(shrimpPos) != 19:
+            shrimpPos.append(createShrimp())
+
+        for x in range(0, len(shrimpPos)):
+            print(x)
+
+
+
+
+
+
+        pygame.display.update() #   fazer update a imagem da janeça
+        clock.tick(60)
+        sec += 1
+
+gameloop()
+
