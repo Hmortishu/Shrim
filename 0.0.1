@@ -2,6 +2,7 @@ import pygame
 import time
 import random
 import math
+import os
 
 
 pygame.init()  # inicializa o pygame
@@ -11,22 +12,24 @@ black = (0, 0, 0)   #   cor preta
 white = (255, 255, 255)     # cor branca
 green = (0,255,0)   #cor verde
 red = (255,0,0)     #cor vermelha
+
 gameDisplay = pygame.display.set_mode((display_witdh, display_height))  # a janela ganha Xtamanho
 pygame.display.set_caption('Shrim')  # titulo da janela
+pygame.display.set_icon('original.png')
 clock = pygame.time.Clock()  # criar um objecto que servira para fazer refresh
 
 
 
  #  funçao criar camarao, cria um camarao numa posição ramdom
 def createShrimp():
-    x = random.randrange(100, 700)
-    y = random.randrange(100, 500)
+    x = random.randrange(20, 780)
+    y = random.randrange(20, 680)
     pygame.draw.circle(gameDisplay, red, (x, y), 10)
     return [x, y]
 
 def createFood():
-    x = random.randrange(100, 700)
-    y = random.randrange(100, 500)
+    x = random.randrange(20, 780)
+    y = random.randrange(20, 580)
     r = random.randrange(3,8)
     pygame.draw.circle(gameDisplay, green, (x, y), r)
     return [[x, y], r]
@@ -91,7 +94,6 @@ def tracking(princ, dataFood):
 
 
 
-
 def gameloop():
     sec = 0
     acabar = False
@@ -103,6 +105,7 @@ def gameloop():
             if event.type == pygame.QUIT:  # no caso de se clicar no X
                 pygame.quit()
                 quit()
+
 
         #criar camaroes
         if sec%600 == 0 and len(shrimpPos) != 20:
@@ -158,6 +161,7 @@ def gameloop():
                     del foodData[z]
                     break
 
+        partir = False
         for x in range(0, len(shrimpPos)):
             posSx = shrimpPos[x][0]
             posSy = shrimpPos[x][1]
@@ -169,11 +173,12 @@ def gameloop():
                 dist = math.hypot(posFx - posSx, posFy - posSy)
                 if dist < 20:
                     del shrimpPos[z]
-                    shrimpPos = list(filter(None.__ne__, shrimpPos))
-                    break
+                    partir = True
+            if partir:
+                break
 
         pygame.display.update() #   fazer update a imagem da janeça
-        clock.tick(60)
+        clock.tick(120000)
         sec += 1
 
 gameloop()
