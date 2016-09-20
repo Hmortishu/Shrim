@@ -1,97 +1,100 @@
+"""
+    Project developed by Pedro Rôlo, started on 08/2016, and still developing.
+    Project developed in Python 3, using the randomPyGame module
+    Version 1.0
+    This project aims to analize basic shrimp activity and help me cultivate my skills as a programer.
+    I hope to eventually implement some kind of AI.
+
+    You can contact me at Hmortishu@gmail.com
+
+"""
+
 import pygame
-import time
 import random
-import math
-import os
+from math import hypot
 
 
-pygame.init()  # inicializa o pygame
-display_witdh = 800 #  largura da janela
-display_height = 600    # Altura da janela
-black = (0, 0, 0)   #   cor preta
-white = (255, 255, 255)     # cor branca
-green = (0,255,0)   #cor verde
-red = (255,0,0)     #cor vermelha
+pygame.init()  #
+#   Window width
+displayWidth = 800
+#   Window height
+displayHeight = 600
+black = (0, 0, 0)
+white = (255, 255, 255)
+green = (0, 255, 0)
+red = (255, 0, 0)
 
-gameDisplay = pygame.display.set_mode((display_witdh, display_height))  # a janela ganha Xtamanho
-pygame.display.set_caption('Shrim')  # titulo da janela
-pygame.display.set_icon('original.png')
-clock = pygame.time.Clock()  # criar um objecto que servira para fazer refresh
+gameDisplay = pygame.display.set_mode((displayWidth, displayHeight))
+#   program name
+pygame.display.set_caption('Shrim')
+#   Clock object, witch allows us to track an amount of time
+clock = pygame.time.Clock()
 
 
-
- #  funçao criar camarao, cria um camarao numa posição ramdom
+#  this function shall create a shtimp at a ramdom location
 def createShrimp():
     x = random.randrange(20, 780)
-    y = random.randrange(20, 680)
+    y = random.randrange(20, 580)
     pygame.draw.circle(gameDisplay, red, (x, y), 10)
+
     return [x, y]
+
 
 def createFood():
     x = random.randrange(20, 780)
     y = random.randrange(20, 580)
-    r = random.randrange(3,8)
+    r = random.randrange(3, 8)
     pygame.draw.circle(gameDisplay, green, (x, y), r)
+
     return [[x, y], r]
 
-def text_objects(text, font):
-    textSurface = font.render(text, True, black)
-    return textSurface, textSurface.get_rect()
+'''
+def textObjects(text, font):
+    textsurface = font.render(text, True, black)
+    return textsurface, textsurface.get_rect()
+
 
 def counter(pontos):
     largeText = pygame.font.Font('freesansbold.ttf', 15)
-    TextSurf, TextRect = text_objects(pontos, largeText)
-    TextRect.center = (30, 15)
-    gameDisplay.blit(TextSurf, TextRect)
+    textSurf, textRect = textObjects(pontos, largeText)
+    textRect.center = (30, 15)
+    gameDisplay.blit(textSurf, textRect)
     pygame.display.update()
-
 '''
-def mover(shrimpPos, foodData):
 
-            else:
-                moveX = 0
-                moveY = 0
-                distX = posSx - posFx
-                distY = posSy - posFy
-                print(distX, distY)
-                if distX < 0 and distY < 0:
-                    moveX = -1;
-                    moveY = -1;
-                #elif distX == 0 and distY'''
 
 def tracking(princ, dataFood):
     posX = princ[0]
     posY = princ[1]
-
     comida = []
+
     for z in range(0, len(dataFood)):
         X = dataFood[z][0][0]
         Y = dataFood[z][0][1]
-        dist = math.hypot(posX - X, posY - Y)
+        dist = hypot(posX - X, posY - Y)
         comida.append(dist)
 
     lowest = comida.index(min(comida))
-
     speedX = 0
     speedY = 0
     foodX = dataFood[lowest][0][0]
     foodY = dataFood[lowest][0][1]
+
     if posX < foodX:
-        speedX +=1
+        speedX += 4
     elif posX > foodX:
-        speedX -=1
+        speedX -= 4
     else:
         speedX = 0
+
     if posY < foodY:
-        speedY += 1
+        speedY += 4
     elif posY > foodY:
-        speedY -= 1
+        speedY -= 4
     else:
         speedY = 0
+
     return speedX, speedY
-
-
-
 
 
 def gameloop():
@@ -99,42 +102,49 @@ def gameloop():
     acabar = False
     shrimpPos = []
     foodData = []
+
     while not acabar:
+        #   Reset the second counter so the variable sec doesn't get out of hand.
+        if sec == 6000000:
+            sec = 0
+
+        #   fill the background white.
         gameDisplay.fill(white)
+
+        #   this permits to stay on alert to key strokes or other tipes of events
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:  # no caso de se clicar no X
+            if event.type == pygame.QUIT:  # if user presses the close button(the X on a window)
                 pygame.quit()
                 quit()
 
-
-        #criar camaroes
-        if sec%600 == 0 and len(shrimpPos) != 20:
+        #   create a shrimp every 10 seconds and if there isn't already 20 shrimps
+        if sec % 600 == 0 and len(shrimpPos) != 20:
             shrimpPos.append(createShrimp())
 
-        #criar comida
-        if sec%120 == 0:
+        #   create 4 food every 1.5 second
+        if sec % 90 == 0:
             foodData.append(createFood())
             foodData.append(createFood())
             foodData.append(createFood())
             foodData.append(createFood())
 
-        # aumento da comida
+        #   increase food radious every 5 seconds
         if sec % 300 == 0:
             for z in range(0, len(foodData)):
                 if foodData[z][1] < 15:
                     foodData[z][1] += 1
 
-        #manter a comida na janela
+        #   redraw the food patches
         for z in range(0, len(foodData)):
             posX = foodData[z][0][0]
             posY = foodData[z][0][1]
             r = foodData[z][1]
-            pygame.draw.circle(gameDisplay, green, (posX,posY), r)
+            pygame.draw.circle(gameDisplay, green, (posX, posY), r)
 
-        #manter os camaroes na janeça
+        #   redraw the shrimp patches
         for x in range(0, len(shrimpPos)):
             pygame.draw.circle(gameDisplay, red, shrimpPos[x], 10)
-               # d = sqrt(((-)*(-))+((-)*(-)))
+        #    d = sqrt(((-)*(-))+((-)*(-)))
         #  i, l = shrimpPos[0]
         #  i+=1
         #  l+=1
@@ -142,25 +152,29 @@ def gameloop():
         #  pygame.draw.circle(gameDisplay, black, shrimpPos[0], 10)
         #  for x in range(0, len(shrimpPos)):
         #    print(x)
-         #   print(shrimpPos[x])
+        #   print(shrimpPos[x])
 
+        #   move shrimps following the data returned from the tracking function
         for z in range(0, len(shrimpPos)):
             moveX, moveY = tracking(shrimpPos[z], foodData)
-            sX, sY = shrimpPos[z]
-            shrimpPos[z][0]+=moveX
-            shrimpPos[z][1]+=moveY
+            shrimpPos[z][0] += moveX
+            shrimpPos[z][1] += moveY
 
+        #   verify if the shrimps are over the food patches
+        #   if they are, the food will disapear
         for x in range(0, len(shrimpPos)):
             posSx = shrimpPos[x][0]
             posSy = shrimpPos[x][1]
             for z in range(0, len(foodData)):
                 posFx = foodData[z][0][0]
                 posFy = foodData[z][0][1]
-                dist = math.hypot(posFx - posSx, posFy - posSy)
+                dist = hypot(posFx - posSx, posFy - posSy)
                 if dist < (10 + foodData[z][1]):
                     del foodData[z]
                     break
 
+        #   verify if there are any shrimps coliding,
+        #   if there are, delete one
         partir = False
         for x in range(0, len(shrimpPos)):
             posSx = shrimpPos[x][0]
@@ -170,16 +184,19 @@ def gameloop():
                     break
                 posFx = shrimpPos[z][0]
                 posFy = shrimpPos[z][1]
-                dist = math.hypot(posFx - posSx, posFy - posSy)
+                dist = hypot(posFx - posSx, posFy - posSy)
                 if dist < 20:
                     del shrimpPos[z]
                     partir = True
             if partir:
                 break
 
-        pygame.display.update() #   fazer update a imagem da janeça
-        clock.tick(120000)
+        #   fazer update a imagem da janea
+        pygame.display.update()
+        clock.tick(60)
         sec += 1
+        if sec % 60 == 0:
+            print(sec)
+
 
 gameloop()
-
