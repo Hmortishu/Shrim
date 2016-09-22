@@ -2,11 +2,10 @@
     Project developed by Pedro Rôlo, started on 08/2016, and still developing.
     Project developed in Python 3, using the randomPyGame module
     Version 1.0
-    This project aims to analize basic shrimp activity and help me cultivate my skills as a programer.
+    This project aims to analize basic shrimp activity and help me cultivate my skills as a programmer.
     I hope to eventually implement some kind of AI.
 
     You can contact me at Hmortishu@gmail.com
-
 """
 
 import pygame
@@ -31,7 +30,7 @@ pygame.display.set_caption('Shrim')
 clock = pygame.time.Clock()
 
 
-#  this function shall create a shtimp at a ramdom location
+#  this function shall create a shtimp at a ramdom location and return that location
 def createShrimp():
     x = random.randrange(20, 780)
     y = random.randrange(20, 580)
@@ -39,7 +38,7 @@ def createShrimp():
 
     return [x, y]
 
-
+#  this function shall create a food patch at a ramdom location and return that location
 def createFood():
     x = random.randrange(20, 780)
     y = random.randrange(20, 580)
@@ -63,6 +62,8 @@ def counter(pontos):
 '''
 
 
+#   this function find the nearest food patch to a shrimp(princ) and
+#   return how much this shrimp should move in a X an Y plane
 def tracking(princ, dataFood):
     posX = princ[0]
     posY = princ[1]
